@@ -1,0 +1,26 @@
+@background-color:#004590;
+@text-color:#fff;
+#div(@width:100px;@height:100px;){
+  width:@width;
+  height:@height;
+  background: @background-color;
+  color:@text-color;
+}
+.div{
+  #div
+}
+.div2{
+  text-align: center;
+  margin-top:10px;
+  #div(150px,auto);
+  background-color: @background-color;
+  &:hover{
+    background-color:fadeout(@background-color,50%);
+  }
+  p{
+    font-size:14px;
+    margin-top:10px;
+    text-align: left;
+    text-indent: 2rem;
+  }
+}
