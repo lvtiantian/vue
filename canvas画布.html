@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <style>
+        #modal{
+            position: fixed;
+            left:0;
+            top:0;
+            bottom:0;
+            right:0;
+            background: rgba(0,0,0,0.1);
+        }
+        #modal canvas{
+            border:1px solid #2A2E33;
+            margin:0 50px;
+        }
+        #modal p.button span{
+            display: inline-block;
+            width:30px;
+            margin:0 10px;
+            cursor: pointer;
+        }
+        .circle{
+            height:30px;
+            border:1px solid #2A2E33;
+            -webkit-border-radius: 15px;
+            -moz-border-radius: 15px;
+            border-radius: 15px;
+        }
+        .rect{
+            height:30px;
+            border:1px solid #2A2E33;
+        }
+        #modal p.button .line{
+            height:2px;
+            background: #2A2E33;
+            margin-bottom:14px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div id="modal">
+        <canvas width="500px" height="500px"></canvas>
+        <p class="button">
+            <span class="circle" onclick="obj.drawcircle()"></span>
+            <span class="rect" onclick="obj.drawrect()"></span>
+            <span class="line" onclick="obj.drawline()"></span>
+        </p>
+    </div>
+    <script src="js/jquery-2.2.3.min.js"></script>
+    <script>
+        var obj={
+            imgdata:null,
+            status:false,
+            rectx1:0,
+            rectx2:0,
+            recty1:0,
+            recty2:0,
+            circlex1:0,
+            circley1:0,
+            circlex2:0,
+            circley2:0,
+            circlex:0,
+            circley:0,
+            circler:0,
+            linex1:0,
+            liney1:0,
+            linex2:0,
+            liney2:0,
+            drawrect:function(){
+                $('canvas').mousedown(function(e){
+                    obj.imgdata=mycanvas.getImageData(0,0,500,500)
+                    obj.rectx1= e.offsetX;
+                    obj.recty1= e.offsetY;
+                    obj.status=true;
+                }).mousemove(function(e){
+                    if(obj.status){
+                        obj.rectx2= e.offsetX-obj.rectx1;
+                        obj.recty2= e.offsetY-obj.recty1;
+
+                        mycanvas.clearRect(0,0,500,500);
+                        mycanvas.putImageData(obj.imgdata,0,0)
+                        rect(obj.rectx1,obj.recty1,obj.rectx2,obj.recty2);
+                    }
+                }).mouseup(function(){
+
+                    obj.imgdata=mycanvas.getImageData(0,0,500,500)
+                    obj.status=false
+                })
+            },
+            drawcircle:function(){
+                $('canvas').mousedown(function(e){
+                    obj.imgdata=mycanvas.getImageData(0,0,500,500)
+                    obj.circlex1= e.offsetX;
+                    obj.circley1= e.offsetY;
+                    obj.status=true;
+                }).mousemove(function(e){
+                    if(obj.status){
+                        obj.circlex2= e.offsetX;
+                        obj.circley2= e.offsetY;
+                        //圆点坐标
+                        obj.circlex= (e.offsetX-obj.circlex1)/2+obj.circlex1;
+                        obj.circley= (e.offsetY-obj.circley1)/2+obj.circley1;
+                        //半径
+                        obj.circler=Math.sqrt(Math.pow(obj.circley2-obj.circley,2)+Math.pow(obj.circlex2-obj.circlex,2))
+                        mycanvas.clearRect(0,0,500,500);
+                        mycanvas.putImageData(obj.imgdata,0,0)
+                        circle(obj.circlex,obj.circley,obj.circler)
+                    }
+                }).mouseup(function(){
+                    obj.imgdata=mycanvas.getImageData(0,0,500,500)
+                    console.log(obj.imgdata)
+                    obj.status=false
+                })
+            },
+            drawline:function(){
+                $('canvas').mousedown(function(e){
+                    obj.imgdata=mycanvas.getImageData(0,0,500,500)
+                    obj.linex1= e.offsetX;
+                    obj.liney1= e.offsetY;
+                    obj.status=true;
+                }).mousemove(function(e){
+                    if(obj.status){
+                        obj.linex2= e.offsetX;
+                        obj.liney2= e.offsetY;
+                        mycanvas.clearRect(0,0,500,500);
+                        mycanvas.putImageData(obj.imgdata,0,0)
+                        line(obj.linex1,obj.liney1,obj.linex2,obj.liney2);
+                    }
+                }).mouseup(function(){
+                    obj.imgdata=mycanvas.getImageData(0,0,500,500)
+                    obj.status=false
+                })
+            }
+        }
+        var mycanvas=document.getElementsByTagName('canvas')[0].getContext('2d');
+        function circle(x,y,r){
+            mycanvas.beginPath();
+            mycanvas.arc(x,y,r,0,Math.PI*2,true);
+            mycanvas.closePath();
+            mycanvas.stroke();
+        }
+        function rect(x1,y1,x2,y2){
+            mycanvas.strokeRect(x1,y1,x2,y2);
+        }
+        function line(x1,y1,x2,y2){
+
+            var Par = 10;
+            var slopy = Math.atan2((y1 - y2), (x1 - x2));
+            var cosy = Math.cos(slopy), siny = Math.sin(slopy);
+            var x4 = x2 + Number(Par * cosy - (Par / 2 * siny));
+            var y4 = y2 + Number(Par * siny + (Par / 2 * cosy));
+            var x5 = x2 + Number(Par * cosy + Par / 2 * siny);
+            var y5 = y2 - Number(Par / 2 * cosy - Par * siny);
+            mycanvas.beginPath();
+            mycanvas.moveTo(x1,y1);
+            mycanvas.lineTo(x2,y2);
+            mycanvas.stroke();
+            mycanvas.closePath();
+            mycanvas.beginPath();
+            mycanvas.moveTo(x4,y4);
+            mycanvas.lineTo(x2,y2);
+            mycanvas.lineTo(x5,y5);
+            mycanvas.stroke();
+            mycanvas.closePath();
+        }
+    </script>
+</body>
+</html>
